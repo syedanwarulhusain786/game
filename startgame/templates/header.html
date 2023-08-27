@@ -1,0 +1,52 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/header.css' %}">
+
+<nav class="navbar bg-primary navbar-expand-lg" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Game</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                
+            </ul>
+            <div class="profile-container">
+                <form action="">
+                    {% csrf_token %}
+                <button class="btn btn-success" id="restart-button">Restart</button>
+                </form>
+              </div>
+            <div class="profile-container" style="margin-right: 20px;margin-left: 20px;">
+                
+                <button type="button" class="btn btn-danger">High Score: {{lastgame}}<i class="fa fa-star" aria-hidden="true"></i></button>
+                  
+              </div>
+            <div class="profile-container">
+              <img src="{% static 'img/profile.png' %}" alt="Profile Photo" class="profile-photo" class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"style="height: 50px; width: 50px;">
+              {{username}}
+              
+              
+              <!-- <button class="user-button"> -->
+                <i class="fa fa-user" aria-hidden="true">
+                    <span>
+                        I.P: {{ip}} 
+                    </span>
+                    </i>
+                
+
+              <!-- </button> -->
+            </div>
+         
+        </div>
+    </div>
+
+</nav>
+<script src="{% static 'js/header.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
