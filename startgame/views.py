@@ -1,25 +1,16 @@
-from django.shortcuts import render, redirect ,HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-import requests
-import json
 import pandas as pd
 
 from django.http import JsonResponse
-
-import random
+from django.contrib.auth.decorators import login_required
 import pandas as pd
-import numpy as np
-import requests
-from bs4 import BeautifulSoup
-from IPython.display import Image, display
 from difflib import SequenceMatcher
 
 import pandas as pd
 from utils.script import play_game,get_player_photo_url
 from .models import GameData
-from django.utils import timezone
 from django.contrib import messages
 combined_data_filtered = pd.read_csv(r'utils\ff.csv',encoding='ISO-8859-1')
 
@@ -43,6 +34,7 @@ def get_player_data(request):
         print(player_id,player_name)
         # player_data=[]
         return JsonResponse(player_data, safe=False)
+@login_required(login_url='login') 
 def start_game(request):
         # Define a variable to keep track of the player's score
 
@@ -90,7 +82,10 @@ def start_game(request):
         context['player_name']=player_name
         context['score']=score
         context['player_id']=player_id
-        new_user = GameData.objects.get(ip=request.session.get('ip'))
+        user = request.user
+        # Now you can use the 'user' object in your view
+        typeEmailX = user.username
+        new_user = GameData.objects.get(username=typeEmailX)
         if new_user.lastgame<score:
             new_user.lastgame=score
         new_user.current_score=score
@@ -100,11 +95,14 @@ def start_game(request):
         
         
     return JsonResponse(context, safe=False)
+@login_required(login_url='login') 
 def reset_game(request):
-    print('here')
+    user = request.user
+        # Now you can use the 'user' object in your view
+    typeEmailX = user.username
     # Initialize score to 0
     if request.method == 'POST':
-        new_user = GameData.objects.get(ip=request.session.get('ip'))
+        new_user = GameData.objects.get(username=typeEmailX)
         new_user.current_score=0
         
         new_user.save()
@@ -112,58 +110,49 @@ def reset_game(request):
         'resp':True
     }
     return JsonResponse(context, safe=False)
-        
-        
+@login_required(login_url='login') 
 def home(request):
-    messages=None
-    user_ip = request.META.get('REMOTE_ADDR')
-    request.session['ip'] = user_ip
-    # Use the ORM to save data
-    user_ip_exists = GameData.objects.filter(ip=user_ip).exists()
+    user = request.user
+        # Now you can use the 'user' object in your view
+    typeEmailX = user.username
+    
+    user_ip_exists = GameData.objects.get(username=typeEmailX)
     if not user_ip_exists:
-        # Create and insert a new User instance
-        new_user = GameData()
-        new_user.ip=user_ip
-        new_user.save()
         current_score=0
         lastgame=0
         username=None
+        
     else:
-        filtered_users = GameData.objects.get(ip=user_ip)
+        filtered_users = user_ip_exists
         current_score=filtered_users.current_score
         lastgame=filtered_users.lastgame
         username=filtered_users.username
-    if request.method == 'POST':
-        username = request.POST.get('username')   
-        if username:
-            username_exists = GameData.objects.filter(username=username).exclude(ip=user_ip).exists()
-            if username_exists:
-                messages="Username already taken"
-                username=None
-                
-            else:
-                
-                username_input = GameData.objects.get(ip=request.session.get('ip'))
-                username_input.username=username
-            
-                username_input.save()
-        else:
-                username=None
-        
+
     top_users = GameData.objects.order_by('-lastgame')[:10]
+    
     context={
-        'ip':user_ip,
         'current_score':current_score,
         'lastgame':lastgame,
         'username':username,
-        'messages':messages,
         'top_users': top_users
     }
     print(context)
     return render(request, 'home.html',context=context)
-# Check if the username already exists
 
 
 
+def custom_login(request):
+    if request.method == 'POST':
+        username = request.POST['typeEmailX']
+        password = request.POST['typePasswordX']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')  # Redirect to the dashboard page after login
+        else:
+            messages.error(request, 'Invalid username or password.')
+    return render(request, 'login.html')
 
-
+def custom_logout(request):
+    logout(request)
+    return redirect('login')  # Redirect to the login page after logout

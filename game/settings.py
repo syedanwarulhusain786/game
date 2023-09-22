@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-^1q-$20w#5c@fcp0cpr40*waktit$km$%t4wd==)&s94^*phyq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dgoetz365.pythonanywhere.com']
 
 
 # Application definition
@@ -125,3 +125,6 @@ STATICFILES_DIRS=[
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL ='startgame.GameData'
+
+LOGOUT_REDIRECT_URL = 'login'
